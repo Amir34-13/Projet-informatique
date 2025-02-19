@@ -1,7 +1,7 @@
 const { check } = require("express-validator");
 const validatorMiddleware = require("../../middlewares/validatorMiddlewares");
 
-const validateBook = [
+exports.creatBookValidator = [
   check("title")
     .trim()
     .notEmpty()
@@ -43,23 +43,20 @@ const validateBook = [
   validatorMiddleware,
 ];
 
-const validateReview = [
-  check("comment")
-    .trim()
-    .notEmpty()
-    .withMessage("Le commentaire est requis.")
-    .isLength({ max: 1000 })
-    .withMessage("Le commentaire ne doit pas dépasser 1000 caractères."),
 
-  check("rating")
-    .notEmpty()
-    .withMessage("La note est requise.")
-    .isInt({ min: 1, max: 5 })
-    .withMessage("La note doit être comprise entre 1 et 5."),
+exports.getBookValidator = [
+  check("id").isMongoId().withMessage("Invalid ID formate"),
+  validatorMiddleware,
+]; 
+
+exports.updateBookValidator = [
+  check("id").isMongoId().withMessage("Invalid ID formate"),
   validatorMiddleware,
 ];
 
-module.exports = {
-  validateBook,
-  validateReview,
-};
+exports.deleteBookValidator = [
+  check("id").isMongoId().withMessage("Invalid ID formate"),
+  validatorMiddleware,
+];
+
+

@@ -14,8 +14,17 @@ const User = require("../modules/userModel");
 // @route   GET /api/v1/auth/signup
 // @access  Public
 exports.signup = asyncHandler(async (req, res, next) => {
-  // 1- Create user
-  const user = await User.create(req.body);
+  
+ 
+  req.body.password = await bcrypt.hash(req.body.password, 12);
+   if (req.file) {
+     profilePictureUrl = `/uploads/${req.file.filename}`; // URL de la photo uploadée
+   }
+
+   const user = await User.create({
+     ...req.body,
+     profilePicture: profilePictureUrl,
+   });   
 
   // 2- Generate token
   const token = createToken(user._id);
@@ -59,12 +68,11 @@ exports.protect = asyncHandler(async (req, res, next) => {
         "You are not login, Please login to get access this route",
         401
       )
-    );
+    ); 
   }
 
   // 2) Verify token (no change happens, expired token)
   const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-
   // 3) Check if user exists
   const currentUser = await User.findById(decoded.userId);
   if (!currentUser) {
@@ -92,6 +100,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
       );
     }
   }
+  
 
   req.user = currentUser;
   next();
@@ -103,6 +112,7 @@ exports.allowedTo = (...roles) =>
   asyncHandler(async (req, res, next) => {
     // 1) access roles
     // 2) access registered user (req.user.role)
+   
     if (!roles.includes(req.user.role)) {
       return next(
         new ApiError("You are not allowed to access this route", 403)

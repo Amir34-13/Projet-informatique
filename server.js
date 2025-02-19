@@ -1,6 +1,8 @@
-// const path = require("path");
+const path = require("path");
 // const hpp = require("hpp");
-
+const globalError=require('./middlewares/errorMiddlewares');
+const ApiError = require("./utils/apiError");
+const userRoute =require('./routes/userRoute');
 const rateLimit = require("express-rate-limit");
 const express = require("express");
 const dotenv = require("dotenv");
@@ -8,7 +10,10 @@ const morgan = require("morgan");
 const cors = require("cors");
 const compression = require("compression");
 const authRoute = require("./routes/authRoute");
-
+const bookRoute=require('./routes/bookRoute');
+const reviewRoute=require('./routes/reviewRoute');
+const responseRoute=require('./routes/responseRoute');
+const bodyParser=require('body-parser');
 dotenv.config();
 const dbConnection = require("./config/dbConfig");
 const app = express();
@@ -45,19 +50,45 @@ const limiter = rateLimit({
 
 // Apply the rate limiting middleware to all requests
 app.use("/api", limiter);
+app.use(express.static(path.join(__dirname, "uploads")));
+
+// app.use(bodyParser.urlencoded({ extended: true })); 
+
+app.use(express.urlencoded({ extended: true })); 
+
+
+
+
+
+
+
 
 app.use(express.json({ limit: "20kb" }));
 
-app.use("api/v1/", authRoute);
+app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/user", userRoute);
+app.use("/api/v1/book", bookRoute);
+
+
+
+app.use("/api/v1/review", reviewRoute);
+app.use("/api/v1/response", responseRoute);
+
+app.all("*", (req, res, next) => {
+  next(new ApiError(`Can't find this route: ${req.originalUrl}`, 400));
+});
+app.use(globalError);
+
+
 
 app.listen(PORT, () => {
   console.log(`Serveur démarré sur le port ${PORT}`);
 });
 
-process.on("unhandledRejection", (err) => {
-  console.error(`UnhandledRejection Errors: ${err.name} | ${err.message}`);
-  server.close(() => {
-    console.error(`Shutting down....`);
-    process.exit(1);
-  });
-});
+// process.on("unhandledRejection", (err) => {
+//   console.error(`UnhandledRejection Errors: ${err.name} | ${err.message}`);
+//   server.close(() => {
+//     console.error(`Shutting down....`);
+//     process.exit(1);
+//   });
+// });

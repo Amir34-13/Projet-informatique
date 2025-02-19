@@ -1,38 +1,35 @@
 const mongoose = require("mongoose");
-const bcrypt= require('bcrypt');
-// Définition du schéma utilisateur
 const userSchema = new mongoose.Schema(
   {
     username: {
       type: String,
       required: true,
       unique: true,
-      trim: true, // Supprime les espaces en début/fin
+      trim: true,
     },
     email: {
       type: String,
       required: true,
       unique: true,
-      lowercase: true, // Convertit automatiquement en minuscule
+      lowercase: true,
       match: [/.+\@.+\..+/, "Veuillez entrer une adresse email valide."],
       trim: true,
     },
     password: {
       type: String,
       required: true,
-      minlength: 6, // Définit une longueur minimale
+      minlength: 6,
     },
     bio: {
       type: String,
-      maxlength: 250, // Longueur maximale de la bio
+      maxlength: 250,
+      default:""
     },
     profilePicture: {
-      type: String, // URL de la photo de profil
+      type: String,
       default: "https://example.com/default-profile-picture.png",
     },
-    followers: [
-      { type: mongoose.Schema.ObjectId, ref: "User" }, // Référence à d'autres utilisateurs
-    ],
+    followers: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
     following: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
     passwordChangedAt: Date,
     passwordResetCode: String,
@@ -43,11 +40,18 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "manager", "admin"],
       default: "user",
     },
-    active: {
-      type: Boolean,
-      default: true,
-    },
-    
+    lus: [
+      {
+         type: mongoose.Schema.ObjectId, ref: "Book" 
+      },
+    ],
+    enCours: [
+      {
+        book: { type: mongoose.Schema.ObjectId, ref: "Book" },
+        pagesLues: { type: Number, default: 0 },
+      },
+    ],
+
     favorite: [
       {
         type: mongoose.Schema.ObjectId,
@@ -57,12 +61,12 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+const User = mongoose.model("User", userSchema);
 
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-  // Hashing user password
-  this.password = await bcrypt.hash(this.password, 12);
-  next();
-});
 
-module.exports = mongoose.model("User", userSchema);
+
+
+
+
+
+module.exports =User;
