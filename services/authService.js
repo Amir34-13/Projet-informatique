@@ -14,15 +14,12 @@ const User = require("../modules/userModel");
 // @route   GET /api/v1/auth/signup
 // @access  Public
 exports.signup = asyncHandler(async (req, res, next) => {
-  
- 
   req.body.password = await bcrypt.hash(req.body.password, 12);
-   if (req.file) {
+  if (req.file) {
     req.body.profilePicture = `/uploads/${req.file.filename}`;
   }
 
-   const user = await User.create(req.body); 
-     
+  const user = await User.create(req.body);
 
   // 2- Generate token
   const token = createToken(user._id);
@@ -66,7 +63,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
         "You are not login, Please login to get access this route",
         401
       )
-    ); 
+    );
   }
 
   // 2) Verify token (no change happens, expired token)
@@ -82,13 +79,13 @@ exports.protect = asyncHandler(async (req, res, next) => {
     );
   }
 
-  // 4) Check if user change his password after token created
+
   if (currentUser.passwordChangedAt) {
     const passChangedTimestamp = parseInt(
       currentUser.passwordChangedAt.getTime() / 1000,
       10
     );
-    // Password changed after token created (Error)
+
     if (passChangedTimestamp > decoded.iat) {
       return next(
         new ApiError(
@@ -98,7 +95,6 @@ exports.protect = asyncHandler(async (req, res, next) => {
       );
     }
   }
-  
 
   req.user = currentUser;
   next();
@@ -110,7 +106,7 @@ exports.allowedTo = (...roles) =>
   asyncHandler(async (req, res, next) => {
     // 1) access roles
     // 2) access registered user (req.user.role)
-   
+
     if (!roles.includes(req.user.role)) {
       return next(
         new ApiError("You are not allowed to access this route", 403)
@@ -146,7 +142,7 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
   await user.save();
 
   // 3) Send the reset code via email
-  const message = `Hi ${user.name},\n We received a request to reset the password on your E-shop Account. \n ${resetCode} \n Enter this code to complete the reset. \n Thanks for helping us keep your account secure.\n The E-shop Team`;
+  const message = `Bonjour ${user.username},\n nous avons bien reçu votre demande pour changer le mot de passe de votre Breviews Account. \n ${resetCode} \n Veuillez garder et entrer ce code de sécurité. \n Cordialement,\n Breviews Team`;
   try {
     await sendEmail({
       email: user.email,
@@ -211,7 +207,8 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
     return next(new ApiError("Reset code not verified", 400));
   }
 
-  user.password = req.body.newPassword;
+  // 3) Hash the new password and save it
+  user.password = await bcrypt.hash(req.body.newPassword, 12);
   user.passwordResetCode = undefined;
   user.passwordResetExpires = undefined;
   user.passwordResetVerified = undefined;
