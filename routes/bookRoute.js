@@ -25,18 +25,21 @@ router.post(
   authService.allowedTo("admin", "manager"),
   upload.single("coverImage"),
   creatBookValidator,
-
   createBook
 );
 
 router.get('/',getAllBooks);
 router.put("/addOrDeleteFavorite",authService.protect, deleteBookValidator, addOrDeleteF("favorite"));
+
+
 router.put(
   "/addOrDeleteEnCours",
   authService.protect,
   deleteBookValidator,
   addOrDeleteF("enCours")
 );
+
+
 router.put(
   "/addOrDeletelu",
   authService.protect,
@@ -45,6 +48,7 @@ router.put(
 );
 
 router.get('/:id',getBookValidator,getBook);
+
 
 router.put(
   "/:id",
@@ -55,8 +59,11 @@ router.put(
   updateBook
 );
 
+
 router.delete("/:id",authService.protect,
   authService.allowedTo("admin", "manager"),
    deleteBookValidator, deleteBook);
+
+
 
 module.exports = router;

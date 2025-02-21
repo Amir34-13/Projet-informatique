@@ -125,8 +125,10 @@ exports.deleteUser = asyncHandler(async (req, res, next) => {
       { $pull: { reviews: review._id } },
       { new: true }
     );
-     await book.save();
+     
      book.updateAverageRating();
+    //  await book.save();
+
   }
    
 await Review.deleteMany({ user: id });

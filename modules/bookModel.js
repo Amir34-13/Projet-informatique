@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const Review = require("./reviewModel");
-const User= require('./userModel');
+const User = require("./userModel");
 const bookSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -12,14 +12,14 @@ const bookSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  nbrPage:{
+  nbrPage: {
     type: Number,
     required: true,
     min: 1,
     max: 10000,
   },
   genre: {
-    type: [String], 
+    type: [String],
     required: true,
   },
   description: {
@@ -37,34 +37,30 @@ const bookSchema = new mongoose.Schema({
     min: 0,
     max: 5,
   },
-  reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }], 
+  reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],
   coverImage: { type: String },
   updatedAt: { type: Date },
   createdAt: { type: Date, default: Date.now },
 });
 
-
-
-
-
-
 bookSchema.methods.updateAverageRating = async function () {
-const Review = require("./reviewModel");
-  const reviews = await Review.find({ book: this._id });
-    console.log(this._id);
+  const Review= require('./reviewModel');
 
-  console.log(reviews);
+  const reviews=await Review.find({_id:{$in:this.reviews}});
+  console.log("reviews", reviews);
   if (reviews.length === 0) {
     this.averageRating = 0;
     return await this.save();
   }
 
   const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0);
+  console.log(reviews.reduce((acc, review) => acc + review.rating, 0),reviews);
   const averageRating = totalRating / reviews.length;
+  console.log(averageRating);
 
   this.averageRating = averageRating;
-
-  await this.save();
+  console.log("here", this.averageRating);
+  return await this.save();
 };
 
 // bookSchema.pre("findByIdAndDelete", async function (next) {
@@ -85,13 +81,6 @@ const Review = require("./reviewModel");
 //   } catch (error) {
 //     next(error);
 //   }
-// });
-
-
-
-
-// bookSchema.post("save", async function () {
-//   await this.updateAverageRating();
 // });
 
 module.exports = mongoose.model("Book", bookSchema);

@@ -64,10 +64,7 @@ exports.createReview = asyncHandler(async (req, res, next) => {
 
 
   book.reviews.push(review._id);
-  await book.save();
-  await book.updateAverageRating(); 
-  
-  console.log("on est là")
+  await book.updateAverageRating();  
 
   const user = await User.findById(userId);
 
@@ -153,23 +150,10 @@ exports.deleteReview = asyncHandler(async (req, res, next) => {
     { $pull: { reviews: req.params.reviewId } },
     { new: true }
   );
-console.log(book.reviews);
-  await book.save();
-
   book.updateAverageRating();
+
   review = await Review.findByIdAndDelete(req.params.reviewId);
 
-  // const book = await Book.findByIdAndUpdate(
-  //   review.book,
-  //   { $pull: { reviews: req.params.reviewId } },
-  //   { new: true }
-  // );
-
-  // if (!book) {
-  //   return next(new ApiError("Book not found", 404));
-  // }
-
-  // await book.updateAverageRating();
 
 
   res.json({ message: "Review deleted successfully" });

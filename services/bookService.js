@@ -64,14 +64,11 @@ exports.updateBook = asyncHandler(
     
 exports.deleteBook = asyncHandler(
     async (req, res, next) => {
-      console.log("on est là")
         const book = await Book.findByIdAndDelete(req.params.id);
         if (!book) {
             next(new ApiError("Book not found", 404));
         }
-        // console.log(book.coverImage);
         const filePath = path.join(__dirname, "..", book.coverImage);
-        console.log(filePath);
         deleteFile(filePath);
         if (!book) {
             next(new ApiError("Book not found", 404));

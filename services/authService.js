@@ -18,13 +18,11 @@ exports.signup = asyncHandler(async (req, res, next) => {
  
   req.body.password = await bcrypt.hash(req.body.password, 12);
    if (req.file) {
-     profilePictureUrl = `/uploads/${req.file.filename}`; // URL de la photo uploadée
-   }
+    req.body.profilePicture = `/uploads/${req.file.filename}`;
+  }
 
-   const user = await User.create({
-     ...req.body,
-     profilePicture: profilePictureUrl,
-   });   
+   const user = await User.create(req.body); 
+     
 
   // 2- Generate token
   const token = createToken(user._id);
