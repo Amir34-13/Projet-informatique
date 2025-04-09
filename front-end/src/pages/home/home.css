@@ -1,0 +1,69 @@
+.home-container {
+  text-align: center;
+  padding: 50px;
+}
+
+.books-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  justify-items: center;
+  padding: 20px;
+}
+
+.book-card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 200px;
+   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.book-card:hover {
+
+     transform: scale(1.05);  
+     cursor: pointer;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.book-card img {
+  border-radius: 10px;
+  width: 100%;
+}
+
+.book-card h3 {
+  margin: 10px 0;
+  font-size: 1.1rem;
+}
+
+.book-card p {
+  font-size: 0.9rem;
+  color: #555;
+}
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pagination button {
+  margin: 5px;
+  padding: 10px 15px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.pagination button.active {
+  background-color: #0056b3;
+}
+
+.pagination button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
